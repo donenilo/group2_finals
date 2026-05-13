@@ -1,0 +1,159 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  width: 100%;
+}
+
+.nav__inner {
+  margin: 0 auto;
+  max-width: 1900px; 
+  padding: 0.85rem 20px; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  margin-right: auto; 
+}
+
+.nav__logo-img {
+  height: 3.2rem; 
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.nav__brand:hover .nav__logo-img {
+  transform: scale(1.05);
+}
+
+.nav__title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #35408f;
+  line-height: 0;
+  letter-spacing: 0em;
+}
+
+.nav__subtitle {
+  font-size: 0.80rem;
+  color: #64748b;
+  margin-top: 0rem;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav__link,
+.nav__logout {
+  border-radius: 9999px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.nav__link {
+  color: #64748b;
+  text-decoration: none;
+}
+
+.nav__link:hover {
+  background: #f1f5f9;
+  color: #35408f;
+}
+
+.nav__link--active {
+  background: rgba(53, 64, 143, 0.1);
+  color: #35408f;
+}
+
+.nav__logout {
+  border: none;
+  background: #35408f;
+  color: #ffd700;
+  cursor: pointer;
+}
+
+.nav__logout:hover {
+  background: #2d367a;
+  transform: translateY(-1px);
+}
+
+/* --- Hamburger Toggle --- */
+.nav__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
+}
+
+.nav__toggle .bar {
+  width: 100%;
+  height: 2px;
+  background-color: #35408f;
+  transition: all 0.3s ease;
+}
+
+/* --- Mobile Breakpoint --- */
+@media (max-width: 768px) {
+  .nav__toggle {
+    display: flex; /* Show hamburger on mobile */
+  }
+
+  /* Animate bars to "X" */
+  .nav__toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .nav__toggle.active .bar:nth-child(2) { opacity: 0; }
+  .nav__toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  .nav__links {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Hidden by default */
+    width: 260px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 100px 24px;
+    gap: 1rem;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: stretch;
+  }
+
+  .nav__links--open {
+    right: 0; /* Slide in */
+  }
+
+  .nav__link, .nav__logout {
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  /* Branding adjustments for small screens */
+  .nav__title { font-size: 1.2rem; }
+  .nav__logo-img { height: 2.8rem; }
+}
+
+@media (max-width: 1400px) {
+  .nav__inner { max-width: 95%; }
+}

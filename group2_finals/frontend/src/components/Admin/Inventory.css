@@ -1,0 +1,113 @@
+.report-list-container {
+  padding: 0rem 5%;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.section-title {
+  color: #35408F; 
+  font-weight: 900;
+  font-size: 2.8rem;
+  margin-bottom: 2rem;
+  letter-spacing: -0.03em;
+}
+
+
+.filter-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filter-bar button {
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-bar button.active {
+  background: #35408F;
+  color: white;
+  border-color: #35408F;
+}
+
+.filter-bar button.active-lost { background: #fee2e2; color: #ef4444; border-color: #ef4444; }
+.filter-bar button.active-found { background: #dcfce7; color: #22c55e; border-color: #22c55e; }
+.filter-bar button.active-pending { background: #fef9c3; color: #a16207; border-color: #a16207; }
+
+.inventory-sheet {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(53, 64, 143, 0.05);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background-color: #35408F; /* NU Blue */
+  color: #FFD700;           /* NU Gold */
+  padding: 1.2rem 1.5rem;
+  text-align: left;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.admin-table td {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-weight: 600;
+  color: #334155;
+}
+
+.item-name-cell {
+  color: #35408F !important;
+  font-weight: 800 !important;
+}
+
+/* Status Pill Fixes */
+.status-cell-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.status-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  min-width: 80px;
+  text-align: center;
+}
+
+.pill-lost { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+.pill-found { background: #dcfce7; color: #22c55e; border: 1px solid #bbf7d0; }
+.pill-pending { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+
+.edit-action-btn {
+  background: #35408F;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-action-btn:hover {
+  background: #2d367a;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(53, 64, 143, 0.2);
+}

@@ -1,0 +1,95 @@
+.edit-report-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+.edit-report-card {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  padding: 2.5rem;
+  border-radius: 2rem;
+  box-shadow: 0 15px 35px rgba(53, 64, 143, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.edit-report-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.edit-report-title {
+  color: #35408F; 
+  font-weight: 900;
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-tag {
+  background: #FFD700; 
+  color: #35408F;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 800;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.input-field, .textarea-field, .status-dropdown {
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+  border: 1px solid #cbd5e1;
+  background: #fdfdfd;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.textarea-field {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.status-dropdown {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #35408F;
+  cursor: pointer;
+}
+
+.error-border {
+  border-color: #ef4444 !important;
+}
+
+.error-message {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.edit-report-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
