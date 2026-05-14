@@ -4,8 +4,11 @@ import "./ReportItem.css";
 
 const ReportItem = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
+    reporterName: "",
+    reporterContact: "",
     itemName: "",
     category: "Electronics",
     otherCategory: "", 
@@ -25,15 +28,56 @@ const ReportItem = () => {
     setImage(e.target.files[0]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const categoryMap = {
+      Electronics: "Electronics",
+      Documents: "Document",
+      "Personal Items": "Accessory",
+      "Books/Stationery": "Document",
+      Others: "Other",
+    };
+
+    const itemType = categoryMap[formData.category] || "Other";
+    const description = formData.otherCategory.trim()
+      ? `${formData.description.trim()}\n\nCustom category: ${formData.otherCategory.trim()}`
+      : formData.description.trim();
+
     const submission = new FormData();
-    Object.keys(formData).forEach(key => submission.append(key, formData[key]));
+
+    submission.append("title", formData.itemName.trim());
+    submission.append("description", description);
+    submission.append("item_type", itemType);
+    submission.append("status", formData.status);
+    submission.append("location", formData.location.trim());
+    submission.append("reporter_name", formData.reporterName.trim());
+    submission.append("reporter_contact", formData.reporterContact.trim());
+
     if (image) submission.append("image", image);
 
-    console.log("Form Submitted:", formData);
-    alert("Report submitted successfully!");
-    navigate("/items");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/items", {
+        method: "POST",
+        body: submission,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit report.");
+      }
+
+      alert("Report submitted successfully!");
+      navigate("/items");
+    } catch (error) {
+      console.error("Submit failed:", error);
+      alert(error.message || "Failed to submit report.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,6 +89,32 @@ const ReportItem = () => {
         </header>
 
         <form onSubmit={handleSubmit} className="report-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label>Reported by</label>
+              <input
+                type="text"
+                name="reporterName"
+                placeholder="Juan Dela Cruz"
+                value={formData.reporterName}
+                onChange={handleChange}
+                required
+                />
+            </div>
+
+            <div className="form-group">
+              <label>Contact</label>
+              <input
+                type="text"
+                name="reporterContact"
+                placeholder="example@students.nu-laguna.edu.ph"
+                value={formData.reporterContact}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label>Item Name</label>
@@ -132,7 +202,9 @@ const ReportItem = () => {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="submit-btn">Submit Report</button>
+            <button type="submit" value="Submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Report"}
+            </button>
             <button type="button" className="cancel-btn" onClick={() => navigate("/")}>Cancel</button>
           </div>
         </form>
