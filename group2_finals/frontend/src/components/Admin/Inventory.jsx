@@ -59,9 +59,9 @@ const Inventory = () => {
             {filteredItems.map((item) => (
               <tr key={item.id || item._id}>
                 <td className="item-name-cell">
-                  {item.itemName || item.item_name || item.name || "Unnamed Item"}
+                  {item.title || "Unnamed Item"}
                 </td>
-                <td>{item.category || item.item_category || "N/A"}</td>
+                <td>{item.item_type || "N/A"}</td>
                 <td>{item.location}</td>
                 <td>
                   <div className="status-cell-wrapper">

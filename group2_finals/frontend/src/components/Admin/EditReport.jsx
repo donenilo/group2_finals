@@ -19,7 +19,7 @@ const EditReport = () => {
     fetch(`http://localhost:5000/api/items/${id}`)
       .then(res => res.json())
       .then(data => setFormData({
-        itemName: data.itemName || data.item_name || "",
+        itemName: data.title || data.item_name || "",
         description: data.description || "",
         location: data.location || "",
         status: data.status?.toLowerCase() || "lost"
@@ -89,8 +89,8 @@ const EditReport = () => {
             />
           </div>
           <div className="edit-actions">
-            <button type="submit" className="primary-btn" disabled={isSubmitting}>Update</button>
-            <button type="button" className="secondary-btn" onClick={() => navigate("/report")}>Cancel</button>
+            <button type="submit" className="primary-btn" onClick={isSubmitting}>Update</button>
+            <button type="button" className="secondary-btn" onClick={() => navigate("/admin/inventory")}>Cancel</button>
           </div>
         </form>
       </div>
