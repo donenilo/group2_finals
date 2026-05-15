@@ -26,8 +26,9 @@ function Items() {
     fetchItems();
   }, [sortOption]);
 
+  // FIX: was filtering on item.name API returns item.title
   const filteredItems = items.filter((item) =>
-    item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -87,7 +88,10 @@ function Items() {
         <div className="empty-state">
           <div className="empty-icon">🔍</div>
           <p>Oops! No items match your search.</p>
-          <button className="clear-btn" onClick={() => {setSortOption("newest"); setSearchQuery("");}}>
+          <button
+            className="clear-btn"
+            onClick={() => { setSortOption("newest"); setSearchQuery(""); }}
+          >
             Reset Gallery
           </button>
         </div>

@@ -1,7 +1,10 @@
 import React from "react";
-import "./ItemCard.css";  
+import { useNavigate } from "react-router-dom"; 
+import "./ItemCard.css";
 
 const ItemCard = ({ item }) => {
+  const navigate = useNavigate();
+
   const formattedDate = item.date_reported
     ? new Date(item.date_reported).toLocaleDateString("en-US", {
         month: "short",
@@ -49,7 +52,7 @@ const ItemCard = ({ item }) => {
         <h3 className="item-card__title">{item.title}</h3>
         <div className="item-card__meta-row">
           <span className="item-card__chip">📍 {item.location || "Unknown"}</span>
-          <span className="item-card__chip item-card__chip--soft">{formattedDate}</span>
+          <span className="item-card__chip">{formattedDate}</span>
         </div>
         <p className="item-card__description">
           {item.description || "No description available."}
@@ -61,7 +64,13 @@ const ItemCard = ({ item }) => {
               {item.reporter_name || "Anonymous"}
             </span>
           </div>
-          <button className="item-card__button">Open</button>
+          {/* ── OPEN BUTTON: now navigates to detail page ── */}
+          <button
+            className="item-card__button"
+            onClick={() => navigate(`/item/${item.id}`)}
+          >
+            Open
+          </button>
         </div>
       </div>
     </article>
