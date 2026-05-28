@@ -2,18 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./EditReport.css";
 
+
 const EditReport = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
+
   const [formData, setFormData] = useState({
     itemName: "",
+    item_type: "",
+    date_reported: "",
     description: "",
     location: "",
     status: "lost",
   });
+
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/items/${id}`)
@@ -21,37 +26,49 @@ const EditReport = () => {
       .then((data) =>
         setFormData({
           itemName: data.title || data.item_name || "",
+          item_type: data.item_type || "Electronics",
+          date_reported: data.date_reported || "",
           description: data.description || "",
           location: data.location || "",
-          // FIX: status was uppercase from DB sometimes — normalize it
           status: data.status?.toLowerCase() || "lost",
         })
       )
       .catch((err) => console.error("Load error:", err));
   }, [id]);
 
+
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    // Validation — FIX: added description check (backend requires it)
+
     let tempErrors = {};
-    if (!formData.itemName.trim())   tempErrors.itemName    = "Item name is required.";
+    if (!formData.itemName.trim())    tempErrors.itemName    = "Item name is required.";
     if (!formData.description.trim()) tempErrors.description = "Description is required.";
-    if (!formData.location.trim())   tempErrors.location    = "Location is required.";
+    if (!formData.location.trim())    tempErrors.location    = "Location is required.";
     setErrors(tempErrors);
     if (Object.keys(tempErrors).length > 0) return;
+
 
     setIsSubmitting(true);
     try {
       const response = await fetch(`http://localhost:5000/api/items/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          title: formData.itemName.trim(),
+          description: formData.description.trim(),
+          item_type: formData.item_type,
+          status: formData.status,
+          date_reported: formData.date_reported,
+          location: formData.location.trim(),
+          reporter_name: null,
+          reporter_contact: null,
+        }),
       });
+
 
       if (response.ok) {
         alert("Item updated successfully!");
-        // FIX: was navigating to "/report" which doesn't exist — corrected to inventory
         navigate("/admin/inventory");
       } else {
         const errData = await response.json();
@@ -65,6 +82,7 @@ const EditReport = () => {
     }
   };
 
+
   return (
     <div className="edit-report-container">
       <div className="edit-report-card">
@@ -73,6 +91,7 @@ const EditReport = () => {
           <h2 className="edit-report-title">Edit Report</h2>
         </div>
 
+
         <form onSubmit={handleUpdate}>
           {/* Item Name */}
           <div className="form-group">
@@ -80,7 +99,6 @@ const EditReport = () => {
             <input
               type="text"
               className={`input-field ${errors.itemName ? "error-border" : ""}`}
-              // FIX: className was "error-input" but CSS defines "error-border"
               value={formData.itemName}
               onChange={(e) => setFormData({ ...formData, itemName: e.target.value })}
               placeholder="e.g. Black Umbrella"
@@ -88,7 +106,8 @@ const EditReport = () => {
             {errors.itemName && <span className="error-message">{errors.itemName}</span>}
           </div>
 
-          {/* Description — FIX: this field was missing entirely from the original */}
+
+          {/* Description */}
           <div className="form-group">
             <label>Description</label>
             <textarea
@@ -99,6 +118,7 @@ const EditReport = () => {
             />
             {errors.description && <span className="error-message">{errors.description}</span>}
           </div>
+
 
           {/* Status */}
           <div className="form-group">
@@ -114,6 +134,7 @@ const EditReport = () => {
             </select>
           </div>
 
+
           {/* Location */}
           <div className="form-group">
             <label>Location</label>
@@ -127,12 +148,12 @@ const EditReport = () => {
             {errors.location && <span className="error-message">{errors.location}</span>}
           </div>
 
+
           {/* Actions */}
           <div className="edit-report-actions">
             <button
               type="submit"
               className="primary-btn"
-              // FIX: was onClick={isSubmitting} (boolean, not a handler) — should be disabled
               disabled={isSubmitting}
             >
               {isSubmitting ? "Updating..." : "Update Item"}
@@ -150,5 +171,6 @@ const EditReport = () => {
     </div>
   );
 };
+
 
 export default EditReport;

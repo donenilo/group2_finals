@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const user = localStorage.getItem("user");
+    setIsLoggedIn(!!user);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
 
   const linkClass = ({ isActive }) =>
     isActive ? "nav__link nav__link--active" : "nav__link";
@@ -25,7 +39,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        {/* HAMBURGER*/}
+        {/* HAMBURGER */}
         <button 
           className={`nav__toggle ${isMenuOpen ? "active" : ""}`} 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -43,7 +57,16 @@ const Navbar = () => {
           <NavLink to="/report-item" className={linkClass} onClick={closeMenu}>Report</NavLink>
           <NavLink to="/admin/inventory" className={linkClass} onClick={closeMenu}>Inventory</NavLink>
           <NavLink to="/account" className={linkClass} onClick={closeMenu}>Account</NavLink>
-          <button className="nav__logout" type="button" onClick={closeMenu}>Logout</button>
+          
+          {isLoggedIn ? (
+            <button className="nav__logout" type="button" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : (
+            <NavLink to="/login" className={linkClass} onClick={closeMenu}>
+              Login
+            </NavLink>
+          )}
         </nav>
       </div>
     </header>

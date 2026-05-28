@@ -7,7 +7,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      {/* HERO*/}
+      {/* HERO */}
       <section className="hero-section">
         <div className="hero-overlay">
           <div className="hero-content">
@@ -16,7 +16,7 @@ function Home() {
               Helping the <span className="highlight">NU Community</span> Find What Matters.
             </h1>
             <p className="hero-quote">"For and By the Nationalians."</p>
-            
+
             <div className="hero-buttons">
               <button className="primary-btn" onClick={() => navigate('/items')}>
                 Browse Items
@@ -24,20 +24,23 @@ function Home() {
               <button className="secondary-btn" onClick={() => navigate('/report-item')}>
                 Report an Item
               </button>
+              <button className="tertiary-btn" onClick={() => navigate('/register')}>
+                Register
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Details*/}
+      {/* Details */}
       <section className="about-section">
         <div className="about-grid">
           <div className="about-text">
             <h2 className="section-title">What is NUHanap?</h2>
             <p>
-              Developed by the <strong>School of Computer Studies</strong> students, 
-              <strong> NUHanap?</strong> is a student project to digitize the manual lost and found process 
-              at NU Laguna. Our goal is to create a more transparent and efficient 
+              Developed by the <strong>School of Computer Studies</strong> students,
+              <strong> NUHanap?</strong> is a student project to digitize the manual lost and found process
+              at NU Laguna. Our goal is to create a more transparent and efficient
               way for Nationalians to recover their belongings and foster a culture of integrity.
             </p>
           </div>
@@ -54,7 +57,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Footerr */}
+      {/* Footer */}
       <footer className="home-footer">
         <div className="footer-content">
           <div className="footer-info">
@@ -64,9 +67,9 @@ function Home() {
             <p className="office-note">Visit the NU Laguna Discipline Office for physical item turnovers.</p>
           </div>
           <div className="footer-badge">
-            <a 
-              href="https://www.facebook.com/NULagunaPh" 
-              target="_blank" 
+            <a
+              href="https://www.facebook.com/NULagunaPh"
+              target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
