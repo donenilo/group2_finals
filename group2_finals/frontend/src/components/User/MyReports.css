@@ -1,0 +1,243 @@
+/* MyReports page styling */
+
+.myreports-page {
+	min-height: 100vh;
+	padding: 32px;
+	background: linear-gradient(180deg, #f5f7fb 0%, #eef3f9 100%);
+	color: #1f2937;
+}
+
+.myreports-container {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.myreports-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.myreports-title {
+	font-size: 2rem;
+	font-weight: 800;
+	line-height: 1.1;
+	margin: 0;
+	color: #0f172a;
+}
+
+.myreports-subtitle {
+	margin: 8px 0 0;
+	color: #64748b;
+	font-size: 0.95rem;
+}
+
+.myreports-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.myreports-search,
+.myreports-filter,
+.myreports-sort {
+	height: 44px;
+	border: 1px solid #dbe3ef;
+	border-radius: 12px;
+	background: #ffffff;
+	color: #334155;
+	padding: 0 14px;
+	outline: none;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.myreports-search {
+	flex: 1 1 280px;
+}
+
+.myreports-filter,
+.myreports-sort {
+	min-width: 180px;
+}
+
+.myreports-search:focus,
+.myreports-filter:focus,
+.myreports-sort:focus {
+	border-color: #4f46e5;
+	box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.myreports-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 20px;
+}
+
+.myreports-card {
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 18px;
+	padding: 20px;
+	box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+	transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.myreports-card:hover {
+	transform: translateY(-3px);
+	border-color: #cbd5e1;
+	box-shadow: 0 16px 34px rgba(15, 23, 42, 0.10);
+}
+
+.myreports-card-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+
+.myreports-card-title {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: #0f172a;
+}
+
+.myreports-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.myreports-status.pending {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
+.myreports-status.approved {
+	background: #ecfdf5;
+	color: #15803d;
+}
+
+.myreports-status.rejected {
+	background: #fef2f2;
+	color: #b91c1c;
+}
+
+.myreports-meta {
+	display: grid;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.myreports-meta-item {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	font-size: 0.92rem;
+	color: #475569;
+}
+
+.myreports-meta-label {
+	color: #94a3b8;
+}
+
+.myreports-description {
+	margin: 0 0 16px;
+	color: #475569;
+	font-size: 0.95rem;
+	line-height: 1.55;
+}
+
+.myreports-report-item {
+	padding: 6px 0;
+	color: #334155;
+	font-size: 0.95rem;
+}
+
+.myreports-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.myreports-btn {
+	height: 40px;
+	padding: 0 14px;
+	border: none;
+	border-radius: 10px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+}
+
+.myreports-btn:hover {
+	transform: translateY(-1px);
+}
+
+.myreports-btn-primary {
+	background: #4f46e5;
+	color: #ffffff;
+}
+
+.myreports-btn-primary:hover {
+	background: #4338ca;
+}
+
+.myreports-btn-secondary {
+	background: #e2e8f0;
+	color: #0f172a;
+}
+
+.myreports-btn-secondary:hover {
+	background: #cbd5e1;
+}
+
+.myreports-empty {
+	grid-column: 1 / -1;
+	text-align: center;
+	padding: 48px 20px;
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px dashed #cbd5e1;
+	border-radius: 18px;
+	color: #64748b;
+}
+
+@media (max-width: 768px) {
+	.myreports-page {
+		padding: 20px;
+	}
+
+	.myreports-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.myreports-title {
+		font-size: 1.6rem;
+	}
+
+	.myreports-toolbar {
+		flex-direction: column;
+	}
+
+	.myreports-search,
+	.myreports-filter,
+	.myreports-sort {
+		width: 100%;
+		min-width: 0;
+	}
+
+	.myreports-card {
+		padding: 16px;
+	}
+}

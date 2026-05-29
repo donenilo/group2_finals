@@ -12,6 +12,7 @@ import Login from "./components/Login";  // ← ADD THIS
 import Inventory from "./components/Admin/Inventory";
 import EditReport from "./components/Admin/EditReport";
 import ReportItem from "./components/User/ReportItem";
+import MyReports from "./components/User/MyReports";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/items" element={<Items />} />
         <Route path="/account" element={<Account />} />
         <Route path="/report-item" element={<ReportItem />} />
+        <Route path="/my-reports" element={<MyReports />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
