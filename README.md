@@ -6,7 +6,7 @@
 
 ### a. Database (MySQL)
 ```
-mysql -u root < database/users_table.sql   # adds ONLY the users table
+mysql -u root < database/users_table.sql   # drops/recreates only the users table + seed accounts
 ```
 On Windows with XAMPP, you can also import either `.sql` file through
 phpMyAdmin (http://localhost/phpmyadmin) instead of the terminal.
@@ -40,7 +40,7 @@ Every seed account uses the password: **Password123**
 | Sir Joey                          | faculty@nu-laguna.edu.ph   | Same as student                                 |
 | DO                                | do@nu-laguna.edu.ph        | My Account, All Reports                         |
 | Admin                             | admin@nu-laguna.edu.ph     | All of the above + Manage Accounts + Inventory  |
-| Carlos Jiro Reano (SUSPENDED)     | carlo@nu-laguna.edu.ph     | Used to test that suspended users are blocked   |
+| Carlos Jiro Reano (SUSPENDED)     | carlos@nu-laguna.edu.ph    | Used to test that suspended users are blocked   |
 
 ---
 
@@ -93,7 +93,7 @@ backend/
     users.js             # /api/users  (register, login, account management)
 database/
   items_db.sql           # items + item_images + users (full schema + seed data)
-  users_table.sql        # just the users table (safe to run on existing data)
+  users_table.sql        # accounts seed script for the users table
 frontend/src/
   components/
     Navbar.jsx           # top bar + "Welcome, [name]" dropdown
