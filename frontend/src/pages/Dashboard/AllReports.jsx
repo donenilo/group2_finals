@@ -63,7 +63,7 @@ const AllReports = () => {
                     {item.status || "unknown"}
                   </span>
                 </td>
-                <td style={{ padding: "0.85rem 1rem", color: "#64748b", fontSize: "0.75rem" }}>{item.reported_by || "—"}</td>
+                <td style={{ padding: "0.85rem 1rem", color: "#64748b", fontSize: "0.75rem" }}>{item.reporter_name || "—"}</td>
                 {role === "admin" && (
                   <td style={{ padding: "0.85rem 1rem" }}>
                     <button onClick={() => navigate(`/admin/edit/${item.id}`)} style={{ padding: "0.3rem 0.7rem", borderRadius: "0.45rem", fontSize: "0.68rem", fontWeight: 700, background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", cursor: "pointer" }}>

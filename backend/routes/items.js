@@ -200,36 +200,56 @@ router.put('/:id', async (req, res) => {
     reporter_contact,
   } = req.body;
 
-  const requiredFields = { title, description, item_type, status, date_reported, location };
-  const missing = Object.entries(requiredFields)
-    .filter(([, v]) => !v || String(v).trim() === '')
-    .map(([k]) => k);
-
-  if (missing.length > 0)
-    return res.status(400).json({ error: 'Missing required fields.', fields: missing });
-
-  const validTypes = ['Electronics', 'Clothing', 'Accessory', 'Document', 'Other'];
-  const validStatuses = ['lost', 'found', 'claimed'];
-
-  if (!validTypes.includes(item_type))
-    return res.status(400).json({ error: `Invalid item_type. Must be one of: ${validTypes.join(', ')}` });
-  if (!validStatuses.includes(status))
-    return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
-
   try {
+    // Load existing item so we can default missing fields (support partial updates)
+    const [existingRows] = await pool.query('SELECT * FROM items WHERE id = ?', [id]);
+    if (existingRows.length === 0) return res.status(404).json({ error: 'Item not found.' });
+    const existing = existingRows[0];
+
+    const finalTitle = (title !== undefined && title !== null && String(title).trim() !== '') ? String(title).trim() : existing.title;
+    const finalDescription = (description !== undefined && description !== null && String(description).trim() !== '') ? String(description).trim() : existing.description;
+    const finalItemType = (item_type !== undefined && item_type !== null && String(item_type).trim() !== '') ? String(item_type).trim() : existing.item_type;
+    const finalStatus = (status !== undefined && status !== null && String(status).trim() !== '') ? String(status).trim() : existing.status;
+    const finalDateReported = (date_reported !== undefined && date_reported !== null && String(date_reported).trim() !== '') ? String(date_reported).trim() : existing.date_reported;
+    const finalLocation = (location !== undefined && location !== null && String(location).trim() !== '') ? String(location).trim() : existing.location;
+
+    // Preserve existing reporter fields if the admin didn't provide them
+    const reporterNameToSave = (reporter_name !== undefined && reporter_name !== null && String(reporter_name).trim() !== '')
+      ? String(reporter_name).trim()
+      : existing.reporter_name;
+    const reporterContactToSave = (reporter_contact !== undefined && reporter_contact !== null && String(reporter_contact).trim() !== '')
+      ? String(reporter_contact).trim()
+      : existing.reporter_contact;
+
+    // Validate after defaulting
+    const validTypes = ['Electronics', 'Clothing', 'Accessory', 'Document', 'Other'];
+    const validStatuses = ['lost', 'found', 'claimed'];
+
+    const requiredFields = { title: finalTitle, description: finalDescription, item_type: finalItemType, status: finalStatus, date_reported: finalDateReported, location: finalLocation };
+    const missing = Object.entries(requiredFields)
+      .filter(([, v]) => !v || String(v).trim() === '')
+      .map(([k]) => k);
+    if (missing.length > 0)
+      return res.status(400).json({ error: 'Missing required fields after defaulting.', fields: missing });
+
+    if (!validTypes.includes(finalItemType))
+      return res.status(400).json({ error: `Invalid item_type. Must be one of: ${validTypes.join(', ')}` });
+    if (!validStatuses.includes(finalStatus))
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+
     const [result] = await pool.query(
       `UPDATE items SET
         title = ?, description = ?, item_type = ?, status = ?, date_reported = ?, location = ?, reporter_name = ?, reporter_contact = ?
       WHERE id = ?`,
       [
-        title.trim(),
-        description.trim(),
-        item_type,
-        status,
-        date_reported,
-        location.trim(),
-        reporter_name ? reporter_name.trim() : null,
-        reporter_contact ? reporter_contact.trim() : null,
+        finalTitle,
+        finalDescription,
+        finalItemType,
+        finalStatus,
+        finalDateReported,
+        finalLocation,
+        reporterNameToSave,
+        reporterContactToSave,
         id,
       ]
     );

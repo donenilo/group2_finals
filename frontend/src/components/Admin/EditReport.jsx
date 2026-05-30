@@ -61,8 +61,6 @@ const EditReport = () => {
           status: formData.status,
           date_reported: formData.date_reported,
           location: formData.location.trim(),
-          reporter_name: null,
-          reporter_contact: null,
         }),
       });
 

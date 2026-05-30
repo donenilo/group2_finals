@@ -12,6 +12,32 @@ export default function MyReports() {
   const [error, setError] = useState('');
   const [openId, setOpenId] = useState(null);
 
+  const formatReportDate = (value) => {
+    if (!value) return 'Date Unknown';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const getStatusLabel = (value) => {
+    if (!value) return 'Unknown';
+    const normalized = String(value).trim().toLowerCase();
+    if (normalized === 'lost') return 'Lost';
+    if (normalized === 'found') return 'Found';
+    return value;
+  };
+
+  const getImageSrc = (item) => {
+    if (item?.primary_image) {
+      return `http://localhost:5000/uploads/${item.primary_image}`;
+    }
+    return 'https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo';
+  };
+
   // Read the logged-in user from localStorage.
   let currentUser = null;
   try {
@@ -92,41 +118,65 @@ export default function MyReports() {
               ) : (
                 reports.map((item) => (
                   <div key={item.id} className="myreports-card">
-                    <div className="myreports-card-header">
-                      <h3 className="myreports-card-title">{item.title || 'Untitled'}</h3>
-                      <div className="myreports-status">{item.status}</div>
-                    </div>
-
-                    <div className="myreports-meta">
-                      <div className="myreports-meta-item">
-                        <div className="myreports-meta-label">Category</div>
-                        <div>{item.item_type || '—'}</div>
-                      </div>
-                      <div className="myreports-meta-item">
-                        <div className="myreports-meta-label">Date</div>
-                        <div>{item.date_reported || '—'}</div>
-                      </div>
-                    </div>
-
-                    {openId === item.id && (
-                      <div className="myreports-description">
-                        <div className="myreports-report-item">
-                          <span className="myreports-meta-label">Location: </span>
-                          {item.location || '—'}
-                        </div>
-                        <div className="myreports-report-item">
-                          {item.description || 'No description.'}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="myreports-actions">
-                      <button
-                        onClick={() => setOpenId(openId === item.id ? null : item.id)}
-                        className={openId === item.id ? 'myreports-btn myreports-btn-primary' : 'myreports-btn myreports-btn-secondary'}
+                    <div className="myreports-card-image-wrap">
+                      <img
+                        src={getImageSrc(item)}
+                        alt={item.title || 'Item image'}
+                        className="myreports-card-image"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo';
+                        }}
+                      />
+                      <div
+                        className={`myreports-status ${
+                          String(item.status || '').toLowerCase() === 'lost'
+                            ? 'myreports-status--lost'
+                            : 'myreports-status--found'
+                        }`}
                       >
-                        {openId === item.id ? 'Hide Details' : 'View Details'}
-                      </button>
+                        {getStatusLabel(item.status)}
+                      </div>
+                    </div>
+
+                    <div className="myreports-card-body">
+                      <h3 className="myreports-card-title">{item.title || 'Untitled'}</h3>
+
+                      <div className="myreports-meta-row">
+                        <span className="myreports-chip">📍 {item.location || 'Unknown'}</span>
+                        <span className="myreports-chip">{formatReportDate(item.date_reported)}</span>
+                      </div>
+
+                      <p className="myreports-description">
+                        {item.description || 'No description available.'}
+                      </p>
+
+                      <div className="myreports-footer">
+                        <div className="myreports-reporter">
+                          <span className="myreports-reporter-label">Reported by</span>
+                          <span className="myreports-reporter-value">
+                            {item.reporter_name || displayName || 'Anonymous'}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => setOpenId(openId === item.id ? null : item.id)}
+                          className={openId === item.id ? 'myreports-btn myreports-btn-primary' : 'myreports-btn myreports-btn-secondary'}
+                        >
+                          {openId === item.id ? 'Hide Details' : 'View Details'}
+                        </button>
+                      </div>
+
+                      {openId === item.id && (
+                        <div className="myreports-expanded">
+                          <div className="myreports-report-item">
+                            <span className="myreports-meta-label">Category:</span> {item.item_type || '—'}
+                          </div>
+                          <div className="myreports-report-item">
+                            <span className="myreports-meta-label">Date:</span> {formatReportDate(item.date_reported)}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
