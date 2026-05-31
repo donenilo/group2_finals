@@ -7,15 +7,12 @@ const AllReports = () => {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    if (role !== "do" && role !== "admin") {
-      navigate("/unauthorized");
-      return;
-    }
+    // No role redirect here — ProtectedRoute in App.jsx handles that
     fetch("http://localhost:5000/api/items")
       .then((r) => r.json())
       .then(setReports)
       .catch(() => setReports([]));
-  }, [role, navigate]);
+  }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -40,15 +37,21 @@ const AllReports = () => {
                   {h}
                 </th>
               ))}
+              {/* Edit/Modify Status column — Admin only, hidden from DO */}
               {role === "admin" && (
-                <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8" }}>Actions</th>
+                <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8" }}>
+                  Actions
+                </th>
               )}
             </tr>
           </thead>
           <tbody>
             {reports.length === 0 && (
               <tr>
-                <td colSpan={role === "admin" ? 6 : 5} style={{ textAlign: "center", padding: "2rem", color: "#94a3b8", fontStyle: "italic" }}>
+                <td
+                  colSpan={role === "admin" ? 6 : 5}
+                  style={{ textAlign: "center", padding: "2rem", color: "#94a3b8", fontStyle: "italic" }}
+                >
                   No reports yet — or backend not running.
                 </td>
               </tr>
@@ -64,10 +67,14 @@ const AllReports = () => {
                   </span>
                 </td>
                 <td style={{ padding: "0.85rem 1rem", color: "#64748b", fontSize: "0.75rem" }}>{item.reporter_name || "—"}</td>
+                {/* Edit button — only rendered for admin, completely hidden from DO */}
                 {role === "admin" && (
                   <td style={{ padding: "0.85rem 1rem" }}>
-                    <button onClick={() => navigate(`/admin/edit/${item.id}`)} style={{ padding: "0.3rem 0.7rem", borderRadius: "0.45rem", fontSize: "0.68rem", fontWeight: 700, background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", cursor: "pointer" }}>
-                      Edit
+                    <button
+                      onClick={() => navigate(`/admin/edit/${item.id}`)}
+                      style={{ padding: "0.3rem 0.7rem", borderRadius: "0.45rem", fontSize: "0.68rem", fontWeight: 700, background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", cursor: "pointer" }}
+                    >
+                      Edit / Modify Status
                     </button>
                   </td>
                 )}

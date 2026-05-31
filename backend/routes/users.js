@@ -5,16 +5,12 @@ const pool = require('../db');
 
 const VALID_ROLES = ['student', 'faculty', 'do', 'admin'];
 
-// Map the frontend's user_type ("Student", "Faculty", "DO", "Admin")
-// to the lowercase role we store in the DB.
 const normalizeRole = (value) => {
   if (!value) return 'student';
   const r = String(value).trim().toLowerCase();
   return VALID_ROLES.includes(r) ? r : 'student';
 };
 
-// Shape a DB row into the object the frontend expects.
-// We never send the password hash back to the browser.
 const shapeUser = (row) => {
   const role = row.role;
   const nameParts = (row.full_name || '').trim().split(/\s+/);
@@ -26,7 +22,6 @@ const shapeUser = (row) => {
     last_name: nameParts.slice(1).join(' ') || '',
     email: row.email,
     role,
-    // The dashboard reads student_number for students/DO and faculty_number for faculty.
     student_number: role === 'faculty' ? null : row.id_number,
     faculty_number: role === 'faculty' ? row.id_number : null,
     status: row.status,
@@ -50,9 +45,21 @@ router.post('/register', async (req, res) => {
   const idNumber = student_number ? String(student_number).trim() : null;
 
   try {
+    // Check duplicate email
     const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email.trim()]);
     if (existing.length > 0) {
       return res.status(409).json({ error: 'An account with this email already exists.' });
+    }
+
+    // Check duplicate student number (students only)
+    if (idNumber && role === 'student') {
+      const [dupeId] = await pool.query(
+        'SELECT id FROM users WHERE id_number = ? AND role = ?',
+        [idNumber, 'student']
+      );
+      if (dupeId.length > 0) {
+        return res.status(409).json({ error: 'An account with this student number already exists.' });
+      }
     }
 
     const hash = await bcrypt.hash(String(password), 10);
@@ -97,7 +104,6 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ error: 'This account is suspended. Please contact the IT Admin.' });
     }
 
-    // No JWT yet — a simple token placeholder keeps the frontend happy.
     res.json({
       message: 'Login successful.',
       token: `session-${userRow.id}-${Date.now()}`,
@@ -111,9 +117,6 @@ router.post('/login', async (req, res) => {
 
 // ------------------------------------------------------------
 // GET /api/users/me/reports?email=...&name=...
-// Returns the lost & found items a specific user reported.
-// (Items are matched by reporter contact/email or name, since the
-//  items table stores reporter_name / reporter_contact, not a user id.)
 // ------------------------------------------------------------
 router.get('/me/reports', async (req, res) => {
   const { email, name } = req.query;
@@ -152,7 +155,6 @@ router.get('/', async (req, res) => {
 
 // ------------------------------------------------------------
 // POST /api/users  — admin: add an account
-// New accounts get a default password the user can change later.
 // ------------------------------------------------------------
 router.post('/', async (req, res) => {
   const { name, full_name, email, role, student_number, password } = req.body;
@@ -170,6 +172,17 @@ router.post('/', async (req, res) => {
     const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email.trim()]);
     if (existing.length > 0) {
       return res.status(409).json({ error: 'An account with this email already exists.' });
+    }
+
+    // Check duplicate student number when admin adds a student
+    if (idNumber && roleValue === 'student') {
+      const [dupeId] = await pool.query(
+        'SELECT id FROM users WHERE id_number = ? AND role = ?',
+        [idNumber, 'student']
+      );
+      if (dupeId.length > 0) {
+        return res.status(409).json({ error: 'An account with this student number already exists.' });
+      }
     }
 
     const hash = await bcrypt.hash(String(rawPassword), 10);
@@ -209,10 +222,20 @@ router.put('/:id', async (req, res) => {
   const idNumber = student_number ? String(student_number).trim() : null;
 
   try {
-    // Make sure the new email isn't taken by a DIFFERENT account.
     const [dupe] = await pool.query('SELECT id FROM users WHERE email = ? AND id <> ?', [email.trim(), id]);
     if (dupe.length > 0) {
       return res.status(409).json({ error: 'Another account already uses this email.' });
+    }
+
+    // Check duplicate student number on edit (exclude current account)
+    if (idNumber && roleValue === 'student') {
+      const [dupeId] = await pool.query(
+        'SELECT id FROM users WHERE id_number = ? AND role = ? AND id <> ?',
+        [idNumber, 'student', id]
+      );
+      if (dupeId.length > 0) {
+        return res.status(409).json({ error: 'Another account already uses this student number.' });
+      }
     }
 
     const [result] = await pool.query(

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./ItemDetailPage.css";
 
 function ItemDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +60,7 @@ function ItemDetailPage() {
       : item?.status === "found"
       ? "detail__status--found"
       : "detail__status--claimed";
+
   if (loading) {
     return (
       <div className="detail-page">
@@ -74,6 +77,7 @@ function ItemDetailPage() {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="detail-page">
@@ -88,6 +92,7 @@ function ItemDetailPage() {
       </div>
     );
   }
+
   return (
     <div className="detail-page">
       {/* Breadcrumb */}
@@ -106,22 +111,18 @@ function ItemDetailPage() {
         <div className="detail__image-panel">
           <div className="detail__main-image-wrap">
             <img
-              src={
-                activeImage ||
-                "https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo"
-              }
+              src={activeImage || "https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo"}
               alt={item.title}
               className="detail__main-image"
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src =
-                  "https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo";
+                e.currentTarget.src = "https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo";
               }}
             />
             <div className={`detail__status ${statusClass}`}>{statusLabel}</div>
           </div>
 
-          {/* Thumbnails (if multiple images) */}
+          {/* Thumbnails */}
           {item.images && item.images.length > 1 && (
             <div className="detail__thumbs">
               {item.images.map((img) => {
@@ -137,8 +138,7 @@ function ItemDetailPage() {
                       alt="thumbnail"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          "https://placehold.co/200x200/1A237E/FFFFFF?text=?";
+                        e.currentTarget.src = "https://placehold.co/200x200/1A237E/FFFFFF?text=?";
                       }}
                     />
                   </button>
@@ -157,9 +157,6 @@ function ItemDetailPage() {
             <p className="detail__description">{item.description}</p>
           </div>
 
-          {
-            
-          }
           <div className="detail__meta-grid">
             <div className="detail__meta-item">
               <span className="detail__meta-label">📍 Location</span>
@@ -205,9 +202,9 @@ function ItemDetailPage() {
             <button
               className="detail__action-btn detail__action-btn--primary"
               onClick={() => {
-                const loggedIn = !!localStorage.getItem("user");
-                if (!loggedIn) {
-                  navigate("/login", { state: { from: `/item/${item.id}` } });
+                if (!isLoggedIn) {
+                  // Guest must create an account first before they can report
+                  navigate("/register", { state: { from: `/item/${item.id}` } });
                 } else {
                   navigate("/report-item", { state: { itemName: item.title } });
                 }

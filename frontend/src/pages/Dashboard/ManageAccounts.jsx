@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import "./ManageAccounts.css";
 
 const API = "http://localhost:5000/api/users";
@@ -20,8 +20,9 @@ const ROLE_BADGE = {
 };
 
 const ManageAccounts = () => {
+  // ProtectedRoute already guarantees only admins reach this page.
+  // We still read role from context for any display purposes.
   const { role } = useOutletContext();
-  const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("all");
@@ -32,7 +33,6 @@ const ManageAccounts = () => {
   const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
-    if (role !== "admin") { navigate("/unauthorized"); return; }
     fetch(API)
       .then((r) => {
         if (!r.ok) throw new Error("bad response");
@@ -43,21 +43,25 @@ const ManageAccounts = () => {
         setUsingMock(false);
       })
       .catch(() => {
-        // Backend not running — show demo data so the page still works.
         setAccounts(MOCK_ACCOUNTS);
         setUsingMock(true);
       });
-  }, [role, navigate]);
+  }, []);
 
   const filtered = accounts.filter((a) => {
-    const matchSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase()) || (a.student_number || "").includes(search);
+    const matchSearch =
+      a.name.toLowerCase().includes(search.toLowerCase()) ||
+      a.email.toLowerCase().includes(search.toLowerCase()) ||
+      (a.student_number || "").includes(search);
     const matchRole = filterRole === "all" || a.role === filterRole;
     return matchSearch && matchRole;
   });
 
   const handleSuspend = async (id) => {
     if (usingMock) {
-      setAccounts((prev) => prev.map((a) => a.id === id ? { ...a, status: a.status === "suspended" ? "active" : "suspended" } : a));
+      setAccounts((prev) =>
+        prev.map((a) => a.id === id ? { ...a, status: a.status === "suspended" ? "active" : "suspended" } : a)
+      );
       return;
     }
     try {
@@ -144,14 +148,29 @@ const ManageAccounts = () => {
           <h2 className="mgmt-title">Account Management</h2>
           <p className="mgmt-sub">{accounts.length} total accounts</p>
         </div>
-        <button className="mgmt-add-btn" onClick={() => setShowAddModal(true)}>+ Add Account</button>
+        {/* Add Account — Admin only action */}
+        {role === "admin" && (
+          <button className="mgmt-add-btn" onClick={() => setShowAddModal(true)}>
+            + Add Account
+          </button>
+        )}
       </div>
 
       <div className="mgmt-toolbar">
-        <input type="text" className="mgmt-search" placeholder="🔍  Search by name, email, or ID..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <input
+          type="text"
+          className="mgmt-search"
+          placeholder="🔍  Search by name, email, or ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <div className="mgmt-filters">
           {["all", "student", "faculty", "do", "admin"].map((r) => (
-            <button key={r} className={`mgmt-filter-btn ${filterRole === r ? "active" : ""}`} onClick={() => setFilterRole(r)}>
+            <button
+              key={r}
+              className={`mgmt-filter-btn ${filterRole === r ? "active" : ""}`}
+              onClick={() => setFilterRole(r)}
+            >
               {r === "all" ? "All" : ROLE_BADGE[r]?.label || r}
             </button>
           ))}
@@ -162,32 +181,64 @@ const ManageAccounts = () => {
         <table className="mgmt-table">
           <thead>
             <tr>
-              <th>Name</th><th>Email</th><th>ID Number</th><th>Role</th><th>Status</th><th>Actions</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>ID Number</th>
+              <th>Role</th>
+              <th>Status</th>
+              {/* Actions column — Admin only */}
+              {role === "admin" && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && <tr><td colSpan={6} className="mgmt-empty">No accounts found.</td></tr>}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={role === "admin" ? 6 : 5} className="mgmt-empty">
+                  No accounts found.
+                </td>
+              </tr>
+            )}
             {filtered.map((acc) => {
               const badge = ROLE_BADGE[acc.role] || ROLE_BADGE.student;
               return (
                 <tr key={acc.id} className={acc.status === "suspended" ? "mgmt-row--suspended" : ""}>
                   <td className="mgmt-name-cell">
-                    <div className="mgmt-mini-avatar" style={{ background: badge.color }}>{acc.name[0].toUpperCase()}</div>
+                    <div className="mgmt-mini-avatar" style={{ background: badge.color }}>
+                      {acc.name[0].toUpperCase()}
+                    </div>
                     <span>{acc.name}</span>
                   </td>
                   <td className="mgmt-email">{acc.email}</td>
                   <td className="mgmt-id">{acc.student_number || acc.faculty_number || "—"}</td>
-                  <td><span className="mgmt-role-badge" style={{ background: badge.bg, color: badge.color }}>{badge.label}</span></td>
-                  <td><span className={`mgmt-status-pill ${acc.status}`}>{acc.status === "suspended" ? "⏸ Suspended" : "✓ Active"}</span></td>
                   <td>
-                    <div className="mgmt-actions">
-                      <button className="mgmt-btn mgmt-btn--edit" onClick={() => setEditTarget({ ...acc })}>Edit</button>
-                      <button className={`mgmt-btn ${acc.status === "suspended" ? "mgmt-btn--unsuspend" : "mgmt-btn--suspend"}`} onClick={() => handleSuspend(acc.id)}>
-                        {acc.status === "suspended" ? "Unsuspend" : "Suspend"}
-                      </button>
-                      <button className="mgmt-btn mgmt-btn--delete" onClick={() => setConfirmDelete(acc)}>Delete</button>
-                    </div>
+                    <span className="mgmt-role-badge" style={{ background: badge.bg, color: badge.color }}>
+                      {badge.label}
+                    </span>
                   </td>
+                  <td>
+                    <span className={`mgmt-status-pill ${acc.status}`}>
+                      {acc.status === "suspended" ? "⏸ Suspended" : "✓ Active"}
+                    </span>
+                  </td>
+                  {/* Edit / Suspend / Delete — Admin only */}
+                  {role === "admin" && (
+                    <td>
+                      <div className="mgmt-actions">
+                        <button className="mgmt-btn mgmt-btn--edit" onClick={() => setEditTarget({ ...acc })}>
+                          Edit
+                        </button>
+                        <button
+                          className={`mgmt-btn ${acc.status === "suspended" ? "mgmt-btn--unsuspend" : "mgmt-btn--suspend"}`}
+                          onClick={() => handleSuspend(acc.id)}
+                        >
+                          {acc.status === "suspended" ? "Unsuspend" : "Suspend"}
+                        </button>
+                        <button className="mgmt-btn mgmt-btn--delete" onClick={() => setConfirmDelete(acc)}>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })}
@@ -202,18 +253,18 @@ const ManageAccounts = () => {
             <h3 className="mgmt-modal-title">Add New Account</h3>
             <div className="mgmt-form">
               <label>Full Name</label>
-              <input value={newAccount.name} onChange={e => setNewAccount(p => ({ ...p, name: e.target.value }))} placeholder="Juan dela Cruz" />
+              <input value={newAccount.name} onChange={(e) => setNewAccount((p) => ({ ...p, name: e.target.value }))} placeholder="Juan dela Cruz" />
               <label>Email</label>
-              <input type="email" value={newAccount.email} onChange={e => setNewAccount(p => ({ ...p, email: e.target.value }))} placeholder="user@nu.edu.ph" />
+              <input type="email" value={newAccount.email} onChange={(e) => setNewAccount((p) => ({ ...p, email: e.target.value }))} placeholder="user@nu.edu.ph" />
               <label>Role</label>
-              <select value={newAccount.role} onChange={e => setNewAccount(p => ({ ...p, role: e.target.value }))}>
+              <select value={newAccount.role} onChange={(e) => setNewAccount((p) => ({ ...p, role: e.target.value }))}>
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
                 <option value="do">Discipline Office</option>
                 <option value="admin">Admin (IT)</option>
               </select>
               <label>ID Number</label>
-              <input value={newAccount.student_number} onChange={e => setNewAccount(p => ({ ...p, student_number: e.target.value }))} placeholder="2024-XXXXXX" />
+              <input value={newAccount.student_number} onChange={(e) => setNewAccount((p) => ({ ...p, student_number: e.target.value }))} placeholder="2024-XXXXXX" />
             </div>
             <div className="mgmt-modal-footer">
               <button className="mgmt-modal-cancel" onClick={() => setShowAddModal(false)}>Cancel</button>
@@ -230,18 +281,18 @@ const ManageAccounts = () => {
             <h3 className="mgmt-modal-title">Edit Account</h3>
             <div className="mgmt-form">
               <label>Full Name</label>
-              <input value={editTarget.name} onChange={e => setEditTarget(p => ({ ...p, name: e.target.value, full_name: e.target.value }))} />
+              <input value={editTarget.name} onChange={(e) => setEditTarget((p) => ({ ...p, name: e.target.value, full_name: e.target.value }))} />
               <label>Email</label>
-              <input type="email" value={editTarget.email} onChange={e => setEditTarget(p => ({ ...p, email: e.target.value }))} />
+              <input type="email" value={editTarget.email} onChange={(e) => setEditTarget((p) => ({ ...p, email: e.target.value }))} />
               <label>Role</label>
-              <select value={editTarget.role} onChange={e => setEditTarget(p => ({ ...p, role: e.target.value }))}>
+              <select value={editTarget.role} onChange={(e) => setEditTarget((p) => ({ ...p, role: e.target.value }))}>
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
                 <option value="do">Discipline Office</option>
                 <option value="admin">Admin (IT)</option>
               </select>
               <label>ID Number</label>
-              <input value={editTarget.student_number || editTarget.faculty_number || ""} onChange={e => setEditTarget(p => ({ ...p, student_number: e.target.value }))} />
+              <input value={editTarget.student_number || editTarget.faculty_number || ""} onChange={(e) => setEditTarget((p) => ({ ...p, student_number: e.target.value }))} />
             </div>
             <div className="mgmt-modal-footer">
               <button className="mgmt-modal-cancel" onClick={() => setEditTarget(null)}>Cancel</button>
@@ -256,7 +307,9 @@ const ManageAccounts = () => {
         <div className="mgmt-modal-overlay" onClick={() => setConfirmDelete(null)}>
           <div className="mgmt-modal mgmt-modal--danger" onClick={(e) => e.stopPropagation()}>
             <h3 className="mgmt-modal-title">Delete Account?</h3>
-            <p className="mgmt-confirm-text">You are about to permanently delete <strong>{confirmDelete.name}</strong>'s account. This cannot be undone.</p>
+            <p className="mgmt-confirm-text">
+              You are about to permanently delete <strong>{confirmDelete.name}</strong>'s account. This cannot be undone.
+            </p>
             <div className="mgmt-modal-footer">
               <button className="mgmt-modal-cancel" onClick={() => setConfirmDelete(null)}>Cancel</button>
               <button className="mgmt-modal-delete" onClick={() => handleDelete(confirmDelete.id)}>Yes, Delete</button>

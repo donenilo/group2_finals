@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Dashboard.css";
 
 const NAV_CONFIG = {
@@ -40,25 +41,18 @@ const ROLE_COLORS = {
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // If somehow user is null (shouldn't happen with ProtectedRoute), redirect to login
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      navigate("/login");
-      return;
-    }
-    try {
-      setUser(JSON.parse(storedUser));
-    } catch {
+    if (!user) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    logout();
     navigate("/");
     window.location.reload();
   };
@@ -97,7 +91,10 @@ const Dashboard = () => {
                 ? `${user.first_name} ${user.last_name}`
                 : user.name || "User"}
             </p>
-            <span className="dash-role-badge" style={{ background: roleColor + "18", color: roleColor }}>
+            <span
+              className="dash-role-badge"
+              style={{ background: roleColor + "18", color: roleColor }}
+            >
               {roleLabel}
             </span>
           </div>

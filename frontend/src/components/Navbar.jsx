@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
-// The dashboard menu, mirrored per role (minus "Items" since it's already
-// a top-level navbar link).
+// Menu items per role — shown in the user dropdown
 const ROLE_MENU = {
   student: [
     { to: "/dashboard/my-account", label: "My Account" },
@@ -20,40 +20,25 @@ const ROLE_MENU = {
   admin: [
     { to: "/dashboard/my-account", label: "My Account" },
     { to: "/dashboard/all-reports", label: "All Reports" },
-    { to: "/admin/manage-accounts", label: "Manage Accounts" },
-    { to: "/admin/inventory", label: "Inventory" },
+    { to: "/admin/manage-accounts", label: "Manage Accounts" }, // admin-only
+    { to: "/admin/inventory", label: "Inventory" },             // admin-only
   ],
 };
 
 const Navbar = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { isLoggedIn, user, role, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
 
-  // Re-read the logged-in user every time the route changes, so the navbar
-  // updates the moment someone logs in, registers, or logs out.
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("user");
-      setUser(raw ? JSON.parse(raw) : null);
-    } catch {
-      setUser(null);
-    }
-    setUserMenuOpen(false);
-  }, [location]);
-
-  const isLoggedIn = !!user;
   const firstName = user?.first_name || user?.name || "User";
-  const role = (user?.role || "student").toLowerCase();
   const menuItems = ROLE_MENU[role] || ROLE_MENU.student;
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    setUser(null);
-    window.location.href = "/";
+    logout();
+    setUserMenuOpen(false);
+    setIsMenuOpen(false);
+    navigate("/");
   };
 
   const linkClass = ({ isActive }) =>
@@ -95,6 +80,13 @@ const Navbar = () => {
           <NavLink to="/" className={linkClass} onClick={closeMenu}>Home</NavLink>
           <NavLink to="/items" className={linkClass} onClick={closeMenu}>Items</NavLink>
 
+          {/* Report Item link — only shown to logged-in users */}
+          {isLoggedIn && (
+            <NavLink to="/report-item" className={linkClass} onClick={closeMenu}>
+              Report Item
+            </NavLink>
+          )}
+
           {isLoggedIn ? (
             <div className="nav__user" style={{ position: "relative" }}>
               <button
@@ -107,7 +99,7 @@ const Navbar = () => {
 
               {userMenuOpen && (
                 <>
-                  {/* invisible backdrop closes the menu on outside click */}
+                  {/* Backdrop */}
                   <div
                     onClick={() => setUserMenuOpen(false)}
                     style={{ position: "fixed", inset: 0, zIndex: 90 }}

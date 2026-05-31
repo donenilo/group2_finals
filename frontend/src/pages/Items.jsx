@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ItemCard from "../components/ItemCard";
+import { useAuth } from "../context/AuthContext";
 import "./Items.css";
 
 function Items() {
@@ -9,6 +11,8 @@ function Items() {
   const [sortOption, setSortOption] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -26,11 +30,19 @@ function Items() {
     fetchItems();
   }, [sortOption]);
 
-  // FIX: was filtering on item.name API returns item.title
   const filteredItems = items.filter((item) =>
     item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Guests → must register first; logged-in users → go straight to report form
+  const handleReportClick = () => {
+    if (!isLoggedIn) {
+      navigate("/register", { state: { from: "/report-item" } });
+    } else {
+      navigate("/report-item");
+    }
+  };
 
   return (
     <main className="items-container">
@@ -64,6 +76,15 @@ function Items() {
               </button>
             ))}
           </div>
+
+          {/* Report CTA — guests see a prompt to register first */}
+          <button
+            className="filter-btn"
+            onClick={handleReportClick}
+            style={{ background: "#35408f", color: "#ffd700", border: "none" }}
+          >
+            {isLoggedIn ? "📝 Report an Item" : "📝 Report an Item (Login Required)"}
+          </button>
         </div>
       </section>
 
