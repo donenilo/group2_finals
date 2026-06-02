@@ -35,12 +35,6 @@ const Inventory = () => {
           <button className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>All</button>
           <button className={filter === "lost" ? "active-lost" : ""} onClick={() => setFilter("lost")}>Lost</button>
           <button className={filter === "found" ? "active-found" : ""} onClick={() => setFilter("found")}>Found</button>
-          <button 
-            className={filter === "pending" ? "active-pending" : "btn-testing"} 
-            onClick={() => setFilter("pending")}
-          >
-            Pending Review
-          </button>
         </div>
       </div>
 
