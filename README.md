@@ -217,3 +217,102 @@ cp database/users_table.seeds.sql.example database/users_table.seeds.sql
 Because `.gitignore` includes `database/*.seeds.sql`, those copied files will remain local and won't be committed or deployed.
 
 After setting env vars for S3, uploads will be saved to S3 and public URLs will be used by the frontend (the frontend reads the same image_key values and resolves them via the API helper).
+
+---
+
+## 10. Complete Vercel Deployment Guide
+
+This section covers deploying **frontend to Vercel** and **backend to a separate service** (recommended for simplicity).
+
+### Frontend Deployment (Vercel)
+
+1. **Push code to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Vercel deployment setup"
+   git push origin vercel-deployment
+   ```
+
+2. **Create Vercel project:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your GitHub repository (`donenilo/group2_finals`)
+   - Vercel will auto-detect the root `vercel.json` configuration
+
+3. **Configure environment variables in Vercel:**
+   - In Project Settings → Environment Variables
+   - Add variable `VITE_API_BASE_URL` 
+   - Set value to your backend API URL (e.g., `https://your-backend.onrender.com` — see Backend Deployment below)
+   - Deploy
+
+4. **Verify deployment:**
+   - Visit your Vercel URL and confirm the home page loads
+   - Navigate to Items gallery and check that data loads (requires backend running)
+
+### Backend Deployment (Render — Recommended)
+
+1. **Push backend code to GitHub:**
+   ```bash
+   # Ensure vercel-deployment branch contains all backend changes
+   git push origin vercel-deployment
+   ```
+
+2. **Deploy to Render.com:**
+   - Go to [render.com](https://render.com)
+   - Sign up/Log in with GitHub
+   - Click "New +" → "Web Service"
+   - Select your GitHub repo (`donenilo/group2_finals`)
+   - Choose branch `vercel-deployment`
+
+3. **Configure Render settings:**
+   - **Name:** `nuhanap-api` (or any name)
+   - **Environment:** `Node`
+   - **Build Command:** `cd backend && npm install`
+   - **Start Command:** `cd backend && npm start`
+   - **Instances:** Free tier is fine for testing
+
+4. **Set environment variables in Render:**
+   - Go to Environment (on the web service page)
+   - Add:
+     - `DATABASE_URL` → your MySQL connection string (e.g., `mysql://user:pass@host:port/items_db`)
+     - `STORAGE_PROVIDER` → `local` (or `s3` if using S3)
+     - (Optional) `S3_BUCKET`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` if using S3
+
+5. **Get your backend URL:**
+   - Once deployed, Render shows your URL: `https://nuhanap-api.onrender.com`
+   - Use this as `VITE_API_BASE_URL` in Vercel
+
+### Connecting Frontend to Backend
+
+After both are deployed:
+
+1. In Vercel project, add/update environment variable:
+   - `VITE_API_BASE_URL` → your Render backend URL (e.g., `https://nuhanap-api.onrender.com`)
+
+2. Trigger a redeployment in Vercel (or do a manual redeploy via Vercel dashboard)
+
+3. Test the full stack:
+   - Visit your Vercel URL
+   - Navigate to Items → should see items from the backend
+   - Try logging in → should connect to backend authentication
+
+### Alternative: Backend on Other Services
+
+- **Railway:** Similar to Render; deploy via `railway up` after linking your GitHub
+- **AWS Elastic Beanstalk:** More complex but scalable
+- **Heroku:** Deprecated free tier, but still an option if you have a paid account
+
+### Troubleshooting
+
+**Frontend shows 404 on page refresh:**
+- Confirmed fixed by `vercel.json` SPA routing. If still an issue, check Vercel build logs.
+
+**Frontend can't reach backend API:**
+- Verify `VITE_API_BASE_URL` is set correctly in Vercel environment
+- Check backend service is running (visit the backend URL in browser, should see API health response at `/api/health`)
+- Ensure CORS is enabled (backend enables `cors()` in `server.js`)
+
+**Backend database connection fails:**
+- Verify `DATABASE_URL` environment variable is set and correct
+- Ensure your MySQL server is accessible from the hosting region
+- For local testing, use `STORAGE_PROVIDER=local` and ensure backend has write permissions to `backend/uploads/`
