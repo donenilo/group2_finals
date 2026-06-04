@@ -74,7 +74,8 @@ router.post('/register', async (req, res) => {
     res.status(201).json({ message: 'Registration successful.', user: shapeUser(rows[0]) });
   } catch (err) {
     console.error('POST /api/users/register error:', err);
-    res.status(500).json({ error: 'Failed to register. Please try again.' });
+    // Return error details temporarily to aid debugging in production logs.
+    res.status(500).json({ error: 'Failed to register. Please try again.', details: err.message });
   }
 });
 
@@ -111,7 +112,8 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error('POST /api/users/login error:', err);
-    res.status(500).json({ error: 'Failed to log in. Please try again.' });
+    // Return error details temporarily to aid debugging in production logs.
+    res.status(500).json({ error: 'Failed to log in. Please try again.', details: err.message });
   }
 });
 
@@ -149,7 +151,8 @@ router.get('/', async (req, res) => {
     res.json(rows.map(shapeUser));
   } catch (err) {
     console.error('GET /api/users error:', err);
-    res.status(500).json({ error: 'Failed to fetch accounts.' });
+    // Return error details temporarily to aid debugging in production logs.
+    res.status(500).json({ error: 'Failed to fetch accounts.', details: err.message });
   }
 });
 
