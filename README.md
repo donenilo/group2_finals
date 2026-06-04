@@ -202,7 +202,7 @@ To deploy the backend as serverless functions (Vercel / Netlify), deploy the API
 Files changed for serverless compatibility:
 - `backend/lib/storage.js` — new storage abstraction (S3 + local fallback)
 - `backend/routes/items.js` — now uses `saveItemImage` from the storage abstraction
-- `backend/server.js` — serves `/uploads` only when using local storage
+- `backend/server.js` — serves `/uploads` only when using local storage 
 
 Seed files
 ---------
