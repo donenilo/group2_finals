@@ -6,6 +6,7 @@ const router = express.Router();
 const pool = require('../db');
 
 const upload = multer({ storage: multer.memoryStorage() });
+const storage = require('../lib/storage');
 
 const CATEGORY_MAP = {
   Electronics: 'Electronics',
@@ -143,15 +144,8 @@ router.post('/', upload.single('image'), async (req, res) => {
     const itemId = result.insertId;
 
     if (req.file) {
-      const imageFolder = path.join(__dirname, '..', 'uploads', 'items', String(itemId));
-      await fs.mkdir(imageFolder, { recursive: true });
-
       const fileName = `${Date.now()}-${sanitizeFilename(req.file.originalname)}`;
-      savedImagePath = path.join(imageFolder, fileName);
-
-      await fs.writeFile(savedImagePath, req.file.buffer);
-
-      const imageKey = path.posix.join('items', String(itemId), fileName);
+      const imageKey = await storage.saveItemImage(itemId, fileName, req.file.buffer, req.file.mimetype);
       await connection.query(
         'INSERT INTO item_images (item_id, image_key, is_primary) VALUES (?, ?, 1)',
         [itemId, imageKey]

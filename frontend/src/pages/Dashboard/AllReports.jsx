@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import { apiUrl } from "../../lib/api";
 
 const AllReports = () => {
   const { role } = useOutletContext();
@@ -8,7 +9,7 @@ const AllReports = () => {
 
   useEffect(() => {
     // No role redirect here — ProtectedRoute in App.jsx handles that
-    fetch("http://localhost:5000/api/items")
+    fetch(apiUrl("/api/items"))
       .then((r) => r.json())
       .then(setReports)
       .catch(() => setReports([]));

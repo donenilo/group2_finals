@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; 
+import { assetUrl } from "../lib/api";
 import "./ItemCard.css";
 
 const ItemCard = ({ item }) => {
@@ -21,7 +22,7 @@ const ItemCard = ({ item }) => {
       : item.status || "Unknown";
 
   const imageSrc = item.primary_image
-    ? `http://localhost:5000/uploads/${item.primary_image}`
+    ? assetUrl(item.primary_image)
     : "https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo";
 
   return (

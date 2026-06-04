@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { apiUrl } from "../../lib/api";
 import "./ManageAccounts.css";
 
-const API = "http://localhost:5000/api/users";
+const API = apiUrl("/api/users");
 
 const MOCK_ACCOUNTS = [
   { id: 1, name: "Ana Reyes", email: "ana.reyes@nu.edu.ph", role: "student", student_number: "2023-00001", status: "active" },

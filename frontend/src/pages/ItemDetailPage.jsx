@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { apiUrl, assetUrl } from "../lib/api";
 import "./ItemDetailPage.css";
 
 function ItemDetailPage() {
@@ -18,7 +19,7 @@ function ItemDetailPage() {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`http://localhost:5000/api/items/${id}`);
+        const res = await fetch(apiUrl(`/api/items/${id}`));
         if (!res.ok) {
           if (res.status === 404) throw new Error("Item not found.");
           throw new Error("Failed to load item.");
@@ -27,7 +28,7 @@ function ItemDetailPage() {
         setItem(data);
 
         const primary = data.images?.find((img) => img.is_primary) || data.images?.[0];
-        setActiveImage(primary ? `http://localhost:5000/uploads/${primary.image_key}` : null);
+        setActiveImage(primary ? assetUrl(primary.image_key) : null);
       } catch (err) {
         setError(err.message || "Something went wrong.");
       } finally {
@@ -126,7 +127,7 @@ function ItemDetailPage() {
           {item.images && item.images.length > 1 && (
             <div className="detail__thumbs">
               {item.images.map((img) => {
-                const src = `http://localhost:5000/uploads/${img.image_key}`;
+                const src = assetUrl(img.image_key);
                 return (
                   <button
                     key={img.image_id}

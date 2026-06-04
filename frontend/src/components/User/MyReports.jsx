@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiUrl, assetUrl } from '../../lib/api';
 import './MyReports.css';
 
 // Shows the lost & found reports submitted by the currently logged-in user.
@@ -33,7 +34,7 @@ export default function MyReports() {
 
   const getImageSrc = (item) => {
     if (item?.primary_image) {
-      return `http://localhost:5000/uploads/${item.primary_image}`;
+      return assetUrl(item.primary_image);
     }
     return 'https://placehold.co/800x600/1A237E/FFFFFF?text=No+Photo';
   };
@@ -58,7 +59,7 @@ export default function MyReports() {
       params.append('name', currentUser.full_name || currentUser.name);
     }
 
-    fetch(`http://localhost:5000/api/users/me/reports?${params.toString()}`)
+    fetch(apiUrl(`/api/users/me/reports?${params.toString()}`))
       .then((r) => {
         if (!r.ok) throw new Error('Failed to load your reports.');
         return r.json();

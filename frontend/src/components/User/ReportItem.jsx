@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { apiUrl } from "../../lib/api";
 import "./ReportItem.css";
 
 const ReportItem = () => {
@@ -72,7 +73,7 @@ const ReportItem = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/items", {
+      const response = await fetch(apiUrl("/api/items"), {
         method: "POST",
         body: submission,
       });

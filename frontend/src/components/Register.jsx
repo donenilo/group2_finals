@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../lib/api";
 import "./Register.css";
 
 const Register = () => {
@@ -87,7 +88,7 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/register", {
+      const response = await fetch(apiUrl("/api/users/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

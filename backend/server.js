@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+// Serve uploaded files from local filesystem only when using local storage.
+if ((process.env.STORAGE_PROVIDER || 'local').trim() === 'local') {
+  app.use('/uploads', express.static('uploads'));
+}
 
 // Routes
 app.use('/api/items', itemsRouter);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { apiUrl } from "../lib/api";
 import "./Login.css";
 
 const Login = () => {
@@ -45,7 +46,7 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
+      const response = await fetch(apiUrl("/api/users/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

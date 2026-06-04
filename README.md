@@ -165,9 +165,55 @@ Added:
 ---
 
 ## 7. Notes / possible next steps
-- Passwords are bcrypt-hashed; never stored in plain text.
-- Admin-added accounts get the temporary password `changeme123` (shown in a popup)
   until the user changes it.
-- If on a different OS, delete `frontend/node_modules` and
   `backend/node_modules` and re-run `npm install` in each.
-- Any changes in design, functionality, etc. are still welcome
+
+---
+
+## 8. Vercel deployment
+
+The frontend can be deployed to Vercel, but the current backend should stay on a host that supports Express, MySQL, and persistent uploads. Vercel is not a good fit for the existing API because `backend/routes/items.js` writes uploaded images to local disk under `backend/uploads`.
+
+Recommended setup:
+- Deploy the backend separately first.
+- In the Vercel project for the frontend, set `VITE_API_BASE_URL` to the backend URL, for example `https://your-api.example.com`.
+- Deploy the `frontend` directory as the Vercel project root.
+- Keep `frontend/vercel.json` in place so React Router routes like `/item/123` refresh correctly.
+
+For local development, copy `frontend/.env.example` to `frontend/.env` and keep `VITE_API_BASE_URL=http://localhost:5000`.
+
+---
+
+## 9. Backend serverless-ready notes
+
+The backend has been refactored so uploads can be stored in S3 (serverless-compatible) or on the local filesystem. By default the backend uses local storage.
+
+Required environment variables when using S3 storage:
+
+- `STORAGE_PROVIDER=s3`
+- `S3_BUCKET` — name of your S3 bucket
+- `AWS_REGION` — region for the bucket (e.g. `us-east-1`)
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` — AWS credentials with PutObject permissions
+
+When `STORAGE_PROVIDER` is not `s3` the server will continue to write files to `backend/uploads` and serve them at `/uploads/<image_key>`.
+
+To deploy the backend as serverless functions (Vercel / Netlify), deploy the API endpoints as serverless functions and set the S3 environment variables in the hosting platform. The Express server is still present and can be run as a normal Node server if preferred.
+
+Files changed for serverless compatibility:
+- `backend/lib/storage.js` — new storage abstraction (S3 + local fallback)
+- `backend/routes/items.js` — now uses `saveItemImage` from the storage abstraction
+- `backend/server.js` — serves `/uploads` only when using local storage
+
+Seed files
+---------
+
+Seed data is provided as example files but is intentionally excluded from the repository to avoid accidentally deploying sample data. If you need to load seed data locally, copy the example seed files and remove the `.example` suffix:
+
+```bash
+cp database/items_db.seeds.sql.example database/items_db.seeds.sql
+cp database/users_table.seeds.sql.example database/users_table.seeds.sql
+```
+
+Because `.gitignore` includes `database/*.seeds.sql`, those copied files will remain local and won't be committed or deployed.
+
+After setting env vars for S3, uploads will be saved to S3 and public URLs will be used by the frontend (the frontend reads the same image_key values and resolves them via the API helper).

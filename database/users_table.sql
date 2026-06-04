@@ -23,18 +23,4 @@ CREATE TABLE users (
 
 -- All seed accounts below use the password: Password123
 -- Some of the names and emails are based on the reporter data already used in items_db.sql.
-INSERT INTO users (full_name, email, password, role, id_number, status) VALUES
-  ('Estudyanteng Brainrot', 'student@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676767', 'active'),
-  ('Dan Buenaventura', 'dan.buenaventura@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676768', 'active'),
-  ('Youone Clamar', 'youone.clamar@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676769', 'active'),
-  ('Nicole Anoso', 'nicole.anoso@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676770', 'active'),
-  ('Paulo Manalo', 'paulo.manalo@nul.edu', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676771', 'active'),
-  ('Sherrie Borbon', 'sherrie.borbon@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'faculty', 'FAC-0031', 'active'),
-  ('Samantha Cole', 'samantha.finds@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'do', 'DO-0018', 'active'),
-  ('Ate Maintenance Staff', 'maryjoy101@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'do', 'DO-0042', 'active'),
-  ('Princess Dimla', 'princess.dimla@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'faculty', 'FAC-0065', 'active'),
-  ('Eric Tabing', 'eric.tabing@example.com', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2023-676772', 'active'),
-  ('Sir Joey', 'faculty@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'faculty', 'FAC-0012', 'active'),
-  ('DO Staff', 'do@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'do', NULL, 'active'),
-  ('IT Admin', 'admin@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'admin', NULL, 'active'),
-  ('Carlos Jiro Reano', 'carlos@nu-laguna.edu.ph', '$2a$10$LDhxs9zenu2.ABOOuU626uMA9zjcoi2abhwNE1tvYstt9YC3YSmbC', 'student', '2022-000088', 'suspended');
+-- (No seed data included; keep schema only.)

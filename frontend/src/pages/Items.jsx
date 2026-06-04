@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ItemCard from "../components/ItemCard";
 import { useAuth } from "../context/AuthContext";
+import { apiUrl } from "../lib/api";
 import "./Items.css";
 
 function Items() {
@@ -19,7 +20,7 @@ function Items() {
       setLoading(true);
       setError("");
       try {
-        const res = await axios.get(`http://localhost:5000/api/items?sort=${sortOption}`);
+        const res = await axios.get(apiUrl(`/api/items?sort=${sortOption}`));
         setItems(res.data);
       } catch (err) {
         setError("Failed to load items. Check if backend is running.");

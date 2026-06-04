@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../lib/api";
 import "./Inventory.css";
 
 const Inventory = () => {
@@ -10,7 +11,7 @@ const Inventory = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/items");
+        const response = await fetch(apiUrl("/api/items"));
         const data = await response.json();
         setItems(data);
       } catch (err) {

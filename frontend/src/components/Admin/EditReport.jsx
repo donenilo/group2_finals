@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { apiUrl } from "../../lib/api";
 import "./EditReport.css";
 
 
@@ -21,7 +22,7 @@ const EditReport = () => {
 
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/items/${id}`)
+    fetch(apiUrl(`/api/items/${id}`))
       .then((res) => res.json())
       .then((data) =>
         setFormData({
@@ -51,7 +52,7 @@ const EditReport = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+      const response = await fetch(apiUrl(`/api/items/${id}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
