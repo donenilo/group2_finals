@@ -1,0 +1,6 @@
+/database/*.seeds.sql
+/backend/uploads/
+node_modules/
+frontend/node_modules/
+*.env
+frontend/.env
